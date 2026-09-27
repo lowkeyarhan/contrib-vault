@@ -4,13 +4,14 @@ import { day, local } from "./lib.js";
 const DAY = 86400000;
 const MONTHS = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");
 const W = 825;
+const L = 32;
+const R = W - 32;
 const BG = "#0B0B0D";
-const BORDER = "#1F1F22";
-const GRID = "#18181B";
+const TRACK = "#1C1C1F";
 const TEXT = "#F2F1EC";
 const MUTED = "#8B8B86";
 const ACCENT = "#E2703A";
-const RAMP = ["#18181B", "#71351C", "#A94C22", "#DE6D31", "#FFAD74"];
+const RAMP = ["#161618", "#71351C", "#A94C22", "#DE6D31", "#FFAD74"];
 
 const esc = (s) =>
   s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
@@ -50,24 +51,19 @@ const card = (
 ) => `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${h}" viewBox="0 0 ${W} ${h}">
 <defs>${defs}</defs>
 <style>${FONTS}
-text{font-family:Geist,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;fill:${MUTED}}
-.e,.m,.v{font-family:GeistMono,ui-monospace,Menlo,monospace}
-.e{font-size:10px;letter-spacing:1.6px;fill:#75756F}
-.m{font-size:11px;fill:${MUTED}}
-.v{font-size:11px;fill:${TEXT}}
-.h{font-size:44px;letter-spacing:-1.8px;fill:${TEXT}}
-.s{font-size:22px;letter-spacing:-0.6px;fill:${TEXT}}
+text{font-family:Geist,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;fill:${MUTED}}
+.t{fill:${TEXT}}
+.l{font-size:18px;letter-spacing:-0.2px}
+.b{font-weight:500}
+.n{font-size:36px;letter-spacing:-1.2px}
 .u{font-size:14px}
 </style>
-<rect x="0.5" y="0.5" width="${W - 1}" height="${h - 1}" rx="14" fill="${BG}" stroke="${BORDER}"/>
+<rect width="${W}" height="${h}" rx="10" fill="${BG}"/>
 ${body}
 </svg>`;
 
-const stat = (x, label, value) =>
-  `<text x="${x}" y="40" text-anchor="end" class="e">${label}</text><text x="${x}" y="76" text-anchor="end" class="s">${value}</text>`;
-
-const hero = (label, value, unit) =>
-  `<text x="28" y="40" class="e">${label}</text><text x="26" y="90"><tspan class="h">${value}</tspan><tspan dx="12" class="u">${unit}</tspan></text>`;
+const headline = (value, rest) =>
+  `<text x="${L}" y="46" class="l"><tspan class="t b">${value}</tspan> ${rest}</text>`;
 
 export function graph(rows, now = Date.now()) {
   const today = Date.parse(local(now));
@@ -93,37 +89,26 @@ export function graph(rows, now = Date.now()) {
   const sum = sorted.reduce((a, b) => a + b, 0);
   const best = cells.reduce((a, c) => (c.n > a.n ? c : a), cells[0]);
 
-  const gx = 58;
-  const gy = 138;
+  const step = (R - L - 11) / 52;
+  const top = 72;
   let body = "";
   cells.forEach(({ t, repos, n }, i) => {
-    const x = gx + Math.floor((i + offset) / 7) * 14;
-    const date = new Date(t);
-    if (date.getUTCDate() === 1)
-      body += `<text x="${x}" y="126" class="m">${MONTHS[date.getUTCMonth()]}</text>`;
+    const x = (L + Math.floor((i + offset) / 7) * step).toFixed(1);
+    if (new Date(t).getUTCDate() === 1)
+      body += `<text x="${x}" y="190">${MONTHS[new Date(t).getUTCMonth()]}</text>`;
     const lines = Object.entries(repos)
       .sort((a, b) => b[1] - a[1])
       .map(([k, v]) => `\n${esc(k)}: ${v}`)
       .join("");
     const level = n && (cap ? Math.min(4, Math.ceil((n / cap) * 4)) : 4);
-    body += `<rect x="${x}" y="${gy + ((i + offset) % 7) * 14}" width="11" height="11" rx="2.5" fill="${RAMP[level]}"><title>${plural(n)} on ${fmt(t, 0)}${lines}</title></rect>`;
-  });
-  ["Mon", "Wed", "Fri"].forEach((d, i) => {
-    body += `<text x="28" y="${gy + (i * 2 + 1) * 14 + 9}" class="m">${d}</text>`;
-  });
-  RAMP.forEach((c, l) => {
-    body += `<rect x="${698 + l * 14}" y="256" width="11" height="11" rx="2.5" fill="${c}"/>`;
+    body += `<rect x="${x}" y="${(top + ((i + offset) % 7) * step).toFixed(1)}" width="11" height="11" rx="2" fill="${RAMP[level]}"><title>${plural(n)} on ${fmt(t, 0)}${lines}</title></rect>`;
   });
 
   return card(
-    290,
-    `${hero("CONTRIBUTIONS", num(sum), "in the last year")}
-${stat(797, "ACTIVE DAYS", num(cells.filter((c) => c.n).length))}
-${stat(680, "BEST DAY", best.n ? `${num(best.n)}<tspan dx="8" class="m">${fmt(best.t, now)}</tspan>` : "0")}
-${body}
-<text x="28" y="266" class="m">${fmt(start, 0)} – ${fmt(today, 0)}</text>
-<text x="690" y="266" text-anchor="end" class="m">Less</text>
-<text x="797" y="266" text-anchor="end" class="m">More</text>`,
+    214,
+    `${headline(num(sum), "contributions in the last year")}
+${best.n ? `<text x="${R}" y="46" text-anchor="end">Best day <tspan class="t">${num(best.n)}</tspan> on ${fmt(best.t, now)}</text>` : ""}
+${body}`,
   );
 }
 
@@ -157,25 +142,20 @@ export function streaks(t, now = Date.now()) {
 
 export function streak(t, now = Date.now()) {
   const s = streaks(t, now);
-  const c = 2 * Math.PI * 52;
-  const ratio = s.longest.len ? s.current.len / s.longest.len : 0;
-  const side = (x, label, value, unit, date) => `
-<text x="${x}" y="70" text-anchor="middle" class="e">${label}</text>
-<text x="${x}" y="126" text-anchor="middle"><tspan class="h">${value}</tspan>${unit ? `<tspan dx="8" class="u">${unit}</tspan>` : ""}</text>
-<text x="${x}" y="156" text-anchor="middle" class="m">${date}</text>`;
+  const width = 225;
+  const done = s.longest.len ? (width * s.current.len) / s.longest.len : 0;
+  const first = new Date(s.first);
+  const col = (x, value, unit, label, meta) => `
+<text x="${x}" y="66"><tspan class="t n">${value}</tspan>${unit ? `<tspan dx="6" class="u">${unit}</tspan>` : ""}</text>
+<text x="${x}" y="94" class="t">${label}</text>
+<text x="${x}" y="113">${meta}</text>`;
   return card(
-    226,
-    `<line x1="275" y1="50" x2="275" y2="176" stroke="${BORDER}"/>
-<line x1="550" y1="50" x2="550" y2="176" stroke="${BORDER}"/>
-${side(137.5, "TOTAL CONTRIBUTIONS", num(s.total), "", `${fmt(s.first, now)} – Present`)}
-<circle cx="412.5" cy="100" r="52" fill="none" stroke="${GRID}" stroke-width="5"/>
-<circle cx="412.5" cy="100" r="52" fill="none" stroke="url(#ember)" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(c * ratio).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 412.5 100)"><title>${s.current.len} of ${s.longest.len} days (longest)</title></circle>
-<path transform="translate(412.5 74) scale(0.6)" fill="${ACCENT}" d="M0-13C5-7 9-3 9 3 9 9 5 13 0 13-5 13-9 9-9 3-9-2-5-4-4-9-2-5 0-4 0-13Z"/>
-<text x="412.5" y="123" text-anchor="middle" class="h" style="font-size:36px">${num(s.current.len)}</text>
-<text x="412.5" y="186" text-anchor="middle" class="e">CURRENT STREAK</text>
-<text x="412.5" y="206" text-anchor="middle" class="m">${range(s.current, now)}</text>
-${side(687.5, "LONGEST STREAK", num(s.longest.len), "days", range(s.longest, now))}`,
-    `<linearGradient id="ember" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFAD74"/><stop offset="1" stop-color="${ACCENT}"/></linearGradient>`,
+    152,
+    `${col(L, num(s.current.len), s.current.len === 1 ? "day" : "days", "Current streak", s.current.len ? `Since ${fmt(s.current.start, now)}` : "Starts with the next push")}
+<line x1="${L}" x2="${L + width}" y1="130" y2="130" stroke="${TRACK}" stroke-width="2" stroke-linecap="round"/>
+${done ? `<line x1="${L}" x2="${(L + done).toFixed(1)}" y1="130" y2="130" stroke="${ACCENT}" stroke-width="2" stroke-linecap="round"><title>${s.current.len} of ${s.longest.len} days</title></line>` : ""}
+${col(305, num(s.longest.len), "days", "Longest streak", range(s.longest, now))}
+${col(578, num(s.total), "", "Contributions, all time", `Since ${MONTHS[first.getUTCMonth()]} ${first.getUTCFullYear()}`)}`,
   );
 }
 
@@ -188,12 +168,9 @@ export function activity(t, now = Date.now()) {
   const sum = pts.reduce((a, p) => a + p.n, 0);
   const max = Math.max(...pts.map((p) => p.n));
   const peak = pts.findIndex((p) => p.n === max);
-  const step =
-    [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000].find(
-      (s) => s * 4 >= max,
-    ) ?? 5000;
-  const X = (i) => 58 + (i * 739) / 30;
-  const Y = (n) => 258 - (n / (step * 4)) * 134;
+  const base = 190;
+  const X = (i) => L + (i * (R - L)) / 30;
+  const Y = (n) => base - (n / (max * 1.15 || 1)) * 104;
   const curve = pts
     .map((p, i) => {
       if (!i) return `M${X(0)},${Y(p.n)}`;
@@ -201,16 +178,11 @@ export function activity(t, now = Date.now()) {
       return `C${mid},${Y(pts[i - 1].n)} ${mid},${Y(p.n)} ${X(i)},${Y(p.n)}`;
     })
     .join("");
-
-  let body = "";
-  for (let k = 0; k <= 4; k++)
-    body += `<line x1="58" x2="797" y1="${Y(k * step)}" y2="${Y(k * step)}" stroke="${k ? GRID : BORDER}"/><text x="46" y="${Y(k * step) + 4}" text-anchor="end" class="m">${num(k * step)}</text>`;
-  for (const i of [0, 5, 10, 15, 20, 25, 30])
-    body += `<text x="${X(i)}" y="284" text-anchor="${i ? (i === 30 ? "end" : "middle") : "start"}" class="m">${fmt(pts[i].t, now)}</text>`;
+  const anchor = (i) => (i < 2 ? "start" : i > 28 ? "end" : "middle");
   const marks = [...new Set([max ? peak : 30, 30])]
     .map(
       (i) =>
-        `<circle cx="${X(i)}" cy="${Y(pts[i].n)}" r="4.5" fill="${ACCENT}" stroke="${BG}" stroke-width="2"/><text x="${X(i)}" y="${Y(pts[i].n) - 12}" text-anchor="middle" class="v">${num(pts[i].n)}</text>`,
+        `<circle cx="${X(i)}" cy="${Y(pts[i].n)}" r="3.5" fill="${ACCENT}" stroke="${BG}" stroke-width="2"/><text x="${X(i)}" y="${Y(pts[i].n) - 11}" text-anchor="${anchor(i)}" class="t">${num(pts[i].n)}</text>`,
     )
     .join("");
   const hits = pts
@@ -221,14 +193,164 @@ export function activity(t, now = Date.now()) {
     .join("");
 
   return card(
+    234,
+    `${headline(num(sum), "contributions in the last 31 days")}
+<text x="${R}" y="46" text-anchor="end"><tspan class="t">${num(Math.round(sum / 31))}</tspan> a day on average</text>
+<line x1="${L}" x2="${R}" y1="${base + 0.5}" y2="${base + 0.5}" stroke="${TRACK}"/>
+<path d="${curve}L${X(30)},${base}L${X(0)},${base}Z" fill="url(#fade)"/>
+<path d="${curve}" fill="none" stroke="${ACCENT}" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/>
+${marks}${hits}
+<text x="${L}" y="214">${fmt(pts[0].t, now)}</text>
+<text x="${R}" y="214" text-anchor="end">Today</text>`,
+    `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ACCENT}" stop-opacity="0.14"/><stop offset="1" stop-color="${ACCENT}" stop-opacity="0"/></linearGradient>`,
+  );
+}
+
+export function hero(t, now = Date.now()) {
+  const today = Date.parse(local(now));
+  const weeks = Array.from({ length: 52 }, (_, w) => {
+    let n = 0;
+    for (let d = 0; d < 7; d++)
+      n += t[day(today - ((51 - w) * 7 + d) * DAY)] ?? 0;
+    return n;
+  });
+  const sum = weeks.reduce((a, b) => a + b, 0);
+  const max = Math.max(...weeks) || 1;
+  const X = (i) => L + (i * (R - L)) / 51;
+  const Y = (n) => 262 - (n / (max * 1.1)) * 68;
+  const curve = weeks
+    .map((n, i) => {
+      if (!i) return `M${X(0)},${Y(n)}`;
+      const mid = (X(i - 1) + X(i)) / 2;
+      return `C${mid},${Y(weeks[i - 1])} ${mid},${Y(n)} ${X(i)},${Y(n)}`;
+    })
+    .join("");
+
+  return card(
     304,
-    `${hero("ACTIVITY · LAST 31 DAYS", num(sum), "contributions")}
-${stat(797, "PEAK", num(max))}
-${stat(700, "DAILY AVG", num(Math.round(sum / 31)))}
-${body}
-<path d="${curve}L${X(30)},258L${X(0)},258Z" fill="url(#fade)"/>
-<path d="${curve}" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-${marks}${hits}`,
-    `<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ACCENT}" stop-opacity="0.28"/><stop offset="1" stop-color="${ACCENT}" stop-opacity="0"/></linearGradient>`,
+    `<text x="${L}" y="46">@lowkeyarhan</text>
+<text x="${R}" y="46" text-anchor="end">Bengaluru, India</text>
+<text x="${L - 3}" y="124" class="t" style="font-size:60px;letter-spacing:-2.6px;font-weight:450">Arhan Das</text>
+<text x="${L}" y="160" style="font-size:19px;letter-spacing:-0.2px">Building things that ship. <tspan style="fill:#FFAD74">And survive.</tspan></text>
+<path d="${curve}L${X(51)},262L${X(0)},262Z" fill="url(#heat)" opacity="0.14"/>
+<path d="${curve}" fill="none" stroke="url(#heat)" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="${X(51)}" cy="${Y(weeks[51])}" r="3.5" fill="#FFAD74" stroke="${BG}" stroke-width="2"/>
+<text x="${L}" y="286">Past 12 months</text>
+<text x="${R}" y="286" text-anchor="end"><tspan class="t">${num(sum)}</tspan> contributions</text>`,
+    `<linearGradient id="heat" x1="${L}" x2="${R}" y1="0" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#71351C"/><stop offset="0.6" stop-color="${ACCENT}"/><stop offset="1" stop-color="#FFAD74"/></linearGradient>`,
+  );
+}
+
+const STORY = [
+  [
+    "Basslines",
+    "EDM producer",
+    "Where it started. Producing electronic music taught me structure, layering and timing long before I wrote code.",
+  ],
+  [
+    "Frames",
+    "Video editor, 8 years and counting",
+    "Freelance video editing and post-production, still going. Pacing, restraint and an eye for detail, which prolly explains why my UIs look good.",
+  ],
+  [
+    "Kernels",
+    "Open-source Android kernels",
+    "QA on open-source MT6785 Android kernels. Close to the metal: flashing builds, reading logs, breaking things on purpose.",
+  ],
+  [
+    "Backends",
+    "Backend-first engineer",
+    "Distributed systems and products built to scale. Backend by instinct, frontend when needed, designer when no one's looking.",
+  ],
+  [
+    "Now",
+    "Agentic harness engineering",
+    "Making agents write code that scales, ships, and doesn't embarrass me. Full-time student, movie maniac, part-time gamer (yes, on a Mac).",
+  ],
+];
+const DOTS = ["#71351C", "#A94C22", "#DE6D31", ACCENT, "#FFAD74"];
+
+const SKILLS = [
+  [
+    "Languages",
+    "Java · JavaScript · TypeScript · Python · SQL · Bash · C · MQL5",
+  ],
+  [
+    "Backend",
+    "Spring Boot · NestJS · Express · REST APIs · gRPC · Microservices",
+  ],
+  [
+    "AI & agents",
+    "Agent orchestration · LangGraph · LangChain · MCP · RAG · Harness engineering · Agent loops · MinHash & LSH · KV cache",
+  ],
+  [
+    "Databases",
+    "PostgreSQL · MySQL · MongoDB · Redis · Apache Cassandra · ElectricSQL",
+  ],
+  ["Frontend", "React · Next.js · Tailwind CSS · React Native · Electron"],
+  ["Messaging & testing", "Apache Kafka · Apache JMeter"],
+  [
+    "DevOps & observability",
+    "Docker · Kubernetes · GitHub Actions · Grafana · Prometheus · Loki · OpenTelemetry",
+  ],
+  [
+    "Foundations",
+    "Distributed systems · System design · Concurrency · Operating systems · Low-level design · Android OS · Computer hardware",
+  ],
+];
+
+const wrap = (s, n) =>
+  s.split(" ").reduce((lines, w) => {
+    const last = lines.at(-1);
+    if (last !== undefined && `${last} ${w}`.length <= n)
+      lines[lines.length - 1] = `${last} ${w}`;
+    else lines.push(w);
+    return lines;
+  }, []);
+
+export function story() {
+  let y = 100;
+  let body = "";
+  const tops = [];
+  STORY.forEach(([title, role, text], i) => {
+    tops.push(y);
+    body += `<circle cx="${L + 4}" cy="${y - 5}" r="4" fill="${DOTS[i]}" stroke="${BG}" stroke-width="3"/>
+<text x="${L + 26}" y="${y}" class="t b" style="font-size:16px">${title}</text>
+<text x="${L + 26}" y="${y + 21}">${role}</text>`;
+    let ty = y;
+    for (const line of wrap(text, 76)) {
+      body += `<text x="270" y="${ty}" class="t" style="font-size:13.5px;fill:#CFCDC6">${esc(line)}</text>`;
+      ty += 21;
+    }
+    y = Math.max(ty, y + 42) + 26;
+  });
+  return card(
+    y - 2,
+    `${headline("Basslines, frames, kernels, backends.", "The long way into engineering.")}
+<line x1="${L + 4}" x2="${L + 4}" y1="${tops[0] - 5}" y2="${tops.at(-1) - 5}" stroke="${TRACK}" stroke-width="1.5"/>
+${body}`,
+  );
+}
+
+export function skills() {
+  let y = 98;
+  let body = "";
+  for (let i = 0; i < SKILLS.length; i += 2) {
+    let h = 0;
+    SKILLS.slice(i, i + 2).forEach(([label, items], j) => {
+      const x = j ? 428 : L;
+      const lines = wrap(items, 54);
+      body += `<rect x="${x}" y="${y - 9}" width="8" height="8" rx="2" fill="${DOTS[i / 2 + 1]}"/>
+<text x="${x + 18}" y="${y}" class="t b" style="font-size:13.5px">${esc(label)}</text>`;
+      lines.forEach((line, k) => {
+        body += `<text x="${x + 18}" y="${y + 23 + k * 20}" style="font-size:13px">${esc(line)}</text>`;
+      });
+      h = Math.max(h, 23 + (lines.length - 1) * 20);
+    });
+    y += h + 36;
+  }
+  return card(
+    y - 14,
+    `${headline("Technical skills", "and the tools I ship with.")}\n${body}`,
   );
 }
