@@ -1,20 +1,26 @@
 # contrib-vault
 
-Self-hosted GitHub contribution cards. Year graph, streak ring and 31-day
-activity — rendered as SVG, no build step, no runtime dependencies.
+Self-hosted GitHub contribution cards. Year graph, streaks, 31-day activity and
+a profile header — rendered as SVG, no build step, no runtime dependencies.
 
 ## Endpoints
 
 | Route           | Card                                                       |
 | --------------- | ---------------------------------------------------------- |
-| `/api/graph`    | 365-day contribution grid, total, active days, best day    |
-| `/api/streak`   | Total contributions, current streak ring, longest streak    |
-| `/api/activity` | 31-day activity curve, peak and daily average              |
+| `/api/hero`     | Name, handle, location and a 12-month contribution sparkline |
+| `/api/story`    | Career timeline, EDM producer through to harness engineering |
+| `/api/skills`   | Technical skills, two-column                               |
+| `/api/graph`    | 365-day contribution grid and best day                      |
+| `/api/streak`   | Current streak progress, longest streak, all-time total     |
+| `/api/activity` | 31-day activity curve with peak and daily average           |
 
-All three return `image/svg+xml` with a 6h CDN cache, so they drop straight
+All of them return `image/svg+xml` with a 6h CDN cache, so they drop straight
 into any README:
 
 ```markdown
+![hero](https://YOUR_DOMAIN/api/hero)
+![story](https://YOUR_DOMAIN/api/story)
+![skills](https://YOUR_DOMAIN/api/skills)
 ![graph](https://YOUR_DOMAIN/api/graph)
 ![streak](https://YOUR_DOMAIN/api/streak)
 ![activity](https://YOUR_DOMAIN/api/activity)
