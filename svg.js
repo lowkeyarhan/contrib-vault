@@ -245,56 +245,52 @@ const STORY = [
   [
     "Basslines",
     "EDM producer",
-    "Where it started. Producing electronic music taught me structure, layering and timing long before I wrote code.",
+    "Where it all started back in 2015. Producing and remixing electronic music taught me structure, layering and timing long before I wrote code.",
   ],
   [
     "Frames",
     "Video editor, 8 years and counting",
-    "Freelance video editing and post-production, still going. Pacing, restraint and an eye for detail, which prolly explains why my UIs look good.",
+    "Professional video editing, cinematography and post-production, still going. Pacing, restraint and an eye for detail, which prolly explains why my UIs look good.",
   ],
   [
     "Kernels",
     "Open-source Android kernels",
-    "QA on open-source MT6785 Android kernels. Close to the metal: flashing builds, reading logs, breaking things on purpose.",
+    "QA and maintaining open-source MT6785 Android kernel tree for LineageOS. Close to the metal: flashing, testing, debugging, monitoring, overclocking and breaking things on purpose.",
   ],
   [
     "Backends",
     "Backend-first engineer",
-    "Distributed systems and products built to scale. Backend by instinct, frontend when needed, designer when no one's looking.",
+    "Distributed systems and products built to scale and optimized for latency, reliability and performance. Backend by instinct, frontend when needed, designer when no one's looking.",
   ],
   [
     "Now",
     "Agentic harness engineering",
-    "Making agents write code that scales, ships, and doesn't embarrass me. Full-time student, movie maniac, part-time gamer (yes, on a Mac).",
+    "Building agents that can adapt and evolve and do whatever the fuck I want it to do. Also a full-time student, movie maniac, part-time gamer (yes, on a Mac).",
   ],
 ];
 const DOTS = ["#71351C", "#A94C22", "#DE6D31", ACCENT, "#FFAD74"];
 
 const SKILLS = [
-  [
-    "Languages",
-    "Java · JavaScript · TypeScript · Python · SQL · Bash · C · MQL5",
-  ],
+  ["Languages", "Java · Js/Ts · Python · SQL · Bash · C · MQL5"],
   [
     "Backend",
     "Spring Boot · NestJS · Express · REST APIs · gRPC · Microservices",
   ],
   [
     "AI & agents",
-    "Agent orchestration · LangGraph · LangChain · MCP · RAG · Harness engineering · Agent loops · MinHash & LSH · KV cache",
+    "Agent orchestration · LangGraph · LangChain · MCP · RAG · Harness engineering · Agent loops · MinHash & LSH · KV cache · LM cache· Embedding & Reranking · Vector DBs · Prompt engineering",
   ],
   [
     "Databases",
     "PostgreSQL · MySQL · MongoDB · Redis · Apache Cassandra · ElectricSQL",
   ],
   ["Frontend", "React · Next.js · Tailwind CSS · React Native · Electron"],
-  ["Messaging & testing", "Apache Kafka · Apache JMeter"],
   [
-    "DevOps & observability",
-    "Docker · Kubernetes · GitHub Actions · Grafana · Prometheus · Loki · OpenTelemetry",
+    "DevOps & Infra",
+    "Apache Kafka · Apache JMeter · Docker · Kubernetes · GitHub Actions · Grafana · Prometheus · Loki · Nginx · Vercel",
   ],
   [
-    "Foundations",
+    "Concepts & systems",
     "Distributed systems · System design · Concurrency · Operating systems · Low-level design · Android OS · Computer hardware",
   ],
 ];
