@@ -351,3 +351,38 @@ export function skills() {
     `${headline("Technical skills", "and the tools I ship with.")}\n${body}`,
   );
 }
+
+const SOCIALS = [
+  ["linkedin", "linkedin.com/in/", "imnotarhannnnn"],
+  ["x", "x.com/", "lowkeyarhann"],
+  ["instagram", "instagram.com/", "lowkeyarhan"],
+  ["leetcode", "leetcode.com/u/", "lowkeyarhan"],
+];
+
+const CH = 6.6;
+const text = SOCIALS.map(([, d, h]) => (d.length + h.length) * CH);
+const gap = (W - 2 * L - text.reduce((a, b) => a + b, 0)) / 3;
+export const SLOTS = SOCIALS.map(([p], i) => {
+  const w = (i === 0 ? L : gap / 2) + text[i] + (i === 3 ? L : gap / 2);
+  return { p, i, w, x: i === 0 ? L : gap / 2 };
+});
+
+export function social(platform) {
+  const s = SLOTS.find((s) => s.p === platform);
+  if (!s) return null;
+  const [, domain, handle] = SOCIALS[s.i];
+  const h = 60;
+  const bg =
+    s.i === 0
+      ? `x="0" y="-20" width="${s.w + 20}" height="${h + 20}" rx="10"`
+      : s.i === 3
+        ? `x="-20" y="-20" width="${s.w + 20}" height="${h + 20}" rx="10"`
+        : `width="${s.w}" height="${h}"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${s.w.toFixed(2)}" height="${h}" viewBox="0 0 ${s.w.toFixed(2)} ${h}">
+<style>${FONTS}
+text{font-family:Geist,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12.5px;fill:${MUTED}}
+</style>
+<rect ${bg} fill="${BG}"/>
+<text x="${s.x.toFixed(2)}" y="35">${domain}<tspan style="fill:${TEXT};font-weight:500">${handle}</tspan></text>
+</svg>`;
+}
