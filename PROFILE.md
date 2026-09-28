@@ -1,14 +1,5 @@
 <a href="https://whoisarhan.vercel.app"><img src="http://localhost:3000/api/hero" width="100%" alt="Arhan Das. Building things that ship. And survive." /></a>
-
-<p align="center">
-  <a href="https://whoisarhan.vercel.app">whoisarhan.vercel.app</a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://linkedin.com/in/imnotarhannnnn">LinkedIn</a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="mailto:anup.arhan.das@gmail.com">anup.arhan.das@gmail.com</a>
-</p>
-
-<br/>
+<a href="https://linkedin.com/in/imnotarhannnnn"><img src="http://localhost:3000/api/social?p=linkedin" width="30.053%" alt="LinkedIn: imnotarhannnnn" /></a><a href="https://x.com/lowkeyarhann"><img src="http://localhost:3000/api/social?p=x" width="18.747%" alt="X: lowkeyarhann" /></a><a href="https://instagram.com/lowkeyarhan"><img src="http://localhost:3000/api/social?p=instagram" width="24.347%" alt="Instagram: lowkeyarhan" /></a><a href="https://leetcode.com/u/lowkeyarhan/"><img src="http://localhost:3000/api/social?p=leetcode" width="26.853%" alt="LeetCode: lowkeyarhan" /></a>
 
 <img src="http://localhost:3000/api/story" width="100%" alt="Basslines, frames, kernels, backends. EDM producer first, then video editor for 8 years and counting, then QA on open-source MT6785 Android kernels, then backend-first engineer in distributed systems, now agentic harness engineering." />
 
