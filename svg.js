@@ -236,7 +236,8 @@ export function hero(t, now = Date.now()) {
 <path d="${curve}" fill="none" stroke="url(#heat)" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="${X(51)}" cy="${Y(weeks[51])}" r="3.5" fill="#FFAD74" stroke="${BG}" stroke-width="2"/>
 <text x="${L}" y="286">Past 12 months</text>
-<text x="${R}" y="286" text-anchor="end"><tspan class="t">${num(sum)}</tspan> contributions</text>`,
+<text x="${R}" y="286" text-anchor="end"><tspan class="t">${num(sum)}</tspan> contributions</text>
+<rect y="292" width="${W}" height="12" fill="${BG}"/>`,
     `<linearGradient id="heat" x1="${L}" x2="${R}" y1="0" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#71351C"/><stop offset="0.6" stop-color="${ACCENT}"/><stop offset="1" stop-color="#FFAD74"/></linearGradient>`,
   );
 }
