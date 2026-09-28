@@ -3,6 +3,7 @@ import { GET as activity } from "./api/activity.js";
 import { GET as graph } from "./api/graph.js";
 import { GET as hero } from "./api/hero.js";
 import { GET as skills } from "./api/skills.js";
+import { GET as social } from "./api/social.js";
 import { GET as story } from "./api/story.js";
 import { GET as streak } from "./api/streak.js";
 import { GET as sync } from "./api/sync.js";
@@ -11,6 +12,7 @@ const routes = {
   "/api/hero": hero,
   "/api/story": story,
   "/api/skills": skills,
+  "/api/social": social,
   "/api/graph": graph,
   "/api/streak": streak,
   "/api/activity": activity,
