@@ -1,6 +1,7 @@
 import http from "node:http";
 import { GET as activity } from "./api/activity.js";
 import { GET as graph } from "./api/graph.js";
+import { GET as languages } from "./api/languages.js";
 import { GET as hero } from "./api/hero.js";
 import { GET as skills } from "./api/skills.js";
 import { GET as social } from "./api/social.js";
@@ -12,6 +13,7 @@ const routes = {
   "/api/hero": hero,
   "/api/story": story,
   "/api/skills": skills,
+  "/api/languages": languages,
   "/api/social": social,
   "/api/graph": graph,
   "/api/streak": streak,
