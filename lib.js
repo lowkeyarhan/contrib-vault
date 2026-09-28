@@ -134,3 +134,26 @@ export async function fresh(since) {
   ]);
   return load(since);
 }
+
+export async function languages() {
+  const repos = [];
+  let after = null;
+  do {
+    const { viewer } = await gh(
+      `query($after: String) { viewer { repositories(ownerAffiliations: OWNER, first: 100, after: $after) { pageInfo { hasNextPage endCursor } nodes { languages(first: 30) { totalSize edges { size node { name } } } } } } }`,
+      { after },
+    );
+    const page = viewer.repositories;
+    repos.push(...page.nodes);
+    after = page.pageInfo.hasNextPage ? page.pageInfo.endCursor : null;
+  } while (after);
+  const count = {};
+  for (const r of repos)
+    for (const e of r.languages.edges)
+      if (e.size >= r.languages.totalSize * 0.05)
+        count[e.node.name] = (count[e.node.name] ?? 0) + 1;
+  return {
+    repos: repos.length,
+    langs: Object.entries(count).sort((a, b) => b[1] - a[1]),
+  };
+}
