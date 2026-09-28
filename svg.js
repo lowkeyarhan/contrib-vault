@@ -1,3 +1,4 @@
+import { ICONS } from "./icons.js";
 import { FONTS } from "./fonts.js";
 import { day, local } from "./lib.js";
 
@@ -385,4 +386,54 @@ text{font-family:Geist,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-
 <rect ${bg} fill="${BG}"/>
 <text x="${s.x.toFixed(2)}" y="35">${domain}<tspan style="fill:${TEXT};font-weight:500">${handle}</tspan></text>
 </svg>`;
+}
+
+const mix = (a, b, t) =>
+  `#${[1, 3, 5]
+    .map((i) => {
+      const v = Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t);
+      return v.toString(16).padStart(2, "0");
+    })
+    .join("")}`;
+
+const monogram = (name) =>
+  (name.match(/[A-Z0-9+#]/g) ?? [name[0]]).join("").slice(0, 2) || name.slice(0, 2);
+
+export function languageCard({ langs }) {
+  const total = langs.reduce((a, [, n]) => a + n, 0);
+  const shares = langs.map(([name, n]) => [name, (n * 100) / total]);
+  const shade = (i) => mix("#FFAD74", "#4A2416", i / Math.max(1, shares.length - 1));
+
+  const avail = R - L - 2 * (shares.length - 1);
+  let x = L;
+  let bar = "";
+  shares.forEach(([name, pct], i) => {
+    const w = Math.max(1.5, (avail * pct) / 100);
+    bar += `<rect x="${x.toFixed(2)}" y="72" width="${w.toFixed(2)}" height="8" fill="${shade(i)}"><title>${esc(name)} ${pct.toFixed(1)}%</title></rect>`;
+    x += w + 2;
+  });
+
+  const gut = 28;
+  const cw = (R - L + gut) / 4;
+  let grid = "";
+  shares.forEach(([name, pct], i) => {
+    const gx = L + (i % 4) * cw;
+    const gy = 128 + Math.floor(i / 4) * 34;
+    const icon = ICONS[name];
+    grid += icon
+      ? `<svg x="${gx.toFixed(2)}" y="${gy - 13}" width="16" height="16" viewBox="${icon.viewBox}" fill="#CFCDC6">${icon.body}</svg>`
+      : `<rect x="${(gx + 0.5).toFixed(2)}" y="${gy - 12.5}" width="15" height="15" rx="4" fill="none" stroke="#3A3A3E"/><text x="${(gx + 8).toFixed(2)}" y="${gy - 2}" text-anchor="middle" style="font-size:7.5px;font-weight:600;fill:#CFCDC6">${esc(monogram(name))}</text>`;
+    grid += `<text x="${(gx + 24).toFixed(2)}" y="${gy}" class="t" style="font-size:13px">${esc(name)}</text>
+<text x="${(gx + cw - gut).toFixed(2)}" y="${gy}" text-anchor="end">${pct.toFixed(1)}%</text>`;
+  });
+
+  const rows = Math.ceil(shares.length / 4);
+  return card(
+    128 + (rows - 1) * 34 + 36,
+    `${headline(num(shares.length), "languages, most used first")}
+<text x="${R}" y="46" text-anchor="end">Forks included</text>
+<g clip-path="url(#bar)">${bar}</g>
+${grid}`,
+    `<clipPath id="bar"><rect x="${L}" y="72" width="${R - L}" height="8" rx="4"/></clipPath>`,
+  );
 }
