@@ -5,26 +5,31 @@ a profile header — rendered as SVG, no build step, no runtime dependencies.
 
 ## Endpoints
 
-| Route           | Card                                                       |
-| --------------- | ---------------------------------------------------------- |
+| Route           | Card                                                        |
+| --------------- | ----------------------------------------------------------- |
 | `/api/hero`     | Name, handle, location and a 12-month contribution sparkline |
 | `/api/story`    | Career timeline, EDM producer through to harness engineering |
-| `/api/skills`   | Technical skills, two-column                               |
-| `/api/graph`    | 365-day contribution grid and best day                      |
-| `/api/streak`   | Current streak progress, longest streak, all-time total     |
-| `/api/activity` | 31-day activity curve with peak and daily average           |
+| `/api/skills`   | Technical skills, two-column                                |
+| `/api/social`   | Social handle badge, one per platform (`?p=linkedin\|x\|instagram\|leetcode`) |
+| `/api/graph`    | 365-day contribution grid and best day                       |
+| `/api/streak`   | Current streak progress, longest streak, all-time total      |
+| `/api/activity` | 31-day activity curve with peak and daily average            |
 
-All of them return `image/svg+xml` with a 6h CDN cache, so they drop straight
+Every card returns `image/svg+xml` behind a CDN cache, so they drop straight
 into any README:
 
 ```markdown
 ![hero](https://YOUR_DOMAIN/api/hero)
 ![story](https://YOUR_DOMAIN/api/story)
 ![skills](https://YOUR_DOMAIN/api/skills)
+![linkedin](https://YOUR_DOMAIN/api/social?p=linkedin)
 ![graph](https://YOUR_DOMAIN/api/graph)
 ![streak](https://YOUR_DOMAIN/api/streak)
 ![activity](https://YOUR_DOMAIN/api/activity)
 ```
+
+`/api/social` is sized to its own content and caches for 24h, so a row of them
+tiles edge to edge. An unknown `?p=` returns `404`.
 
 `/api/sync` is not a card — it's the nightly backfill endpoint and rejects
 anything without `Authorization: Bearer $CRON_SECRET`.
