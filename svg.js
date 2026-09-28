@@ -23,7 +23,7 @@ export const svgResponse = (svg) =>
     headers: {
       "Content-Type": "image/svg+xml",
       "Cache-Control":
-        "public, max-age=0, s-maxage=21600, stale-while-revalidate=86400",
+        "public, max-age=0, s-maxage=10800, stale-while-revalidate=86400",
     },
   });
 
